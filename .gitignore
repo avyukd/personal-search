@@ -1,0 +1,2 @@
+#ignore indexdir and contents
+indexdir/**/*

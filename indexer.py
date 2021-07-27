@@ -4,7 +4,7 @@ from whoosh import index
 import os, os.path
 import textract
 
-TEST_PATH = r"C:\Users\avyuk\OneDrive\Desktop\EeS"
+TEST_PATH = r"C:\Users\avyuk\OneDrive\Desktop"
 
 schema = Schema(filename=ID(stored=True),
                 filepath=ID(stored=True),
@@ -21,17 +21,21 @@ ix = index.open_dir("indexdir")
 
 writer = ix.writer()
 
-for file in sample_files:
-    if ".pdf" in file or ".docx" in file or ".doc" in file:
-        try:
-            filepath = os.path.join(TEST_PATH, file)
+for path, directories, files in os.walk(TEST_PATH):
+    for file in files:
+        if ".pdf" in file or ".docx" in file or ".doc" in file:
+            try:
+                filepath = os.path.join(TEST_PATH, path, file)
 
-            text = textract.process(filepath).decode("utf-8")
-            writer.add_document(filename=file,
-                                filepath=filepath,
-                                content=text)
-        except UnicodeDecodeError:
-            print("UnicodeDecodeError. Moving to next file.")
+                text = textract.process(filepath).decode("utf-8")
+                writer.add_document(filename=file,
+                                    filepath=filepath,
+                                    content=text)
+                print(file + " added.")
+            except UnicodeDecodeError:
+                print("UnicodeDecodeError. Moving to next file.")
+            except Exception as e:
+                print("Unknown error: "+str(e))
 writer.commit()
 
 
