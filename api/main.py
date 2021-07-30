@@ -14,14 +14,28 @@ app.add_middleware(
 )
 
 es = None
+es = start_es()
 
-@app.on_event("startup")
-async def startup():
-    es = start_es()
+query_template = {
+        "query": {
+            "query_string":{
+                "query": "",
+                "fields": ["content", "filename"]
+            }
+        },
+        "highlight" : {
+            "fields" : {
+                "content" : {},
+                "filename" : {}
+            }
+        }
+    }
 
 @app.get("/test/search")
-def test_search(query: str):
+def test_search(user_query: str):
     if es is not None:
+        query = query_template.copy()
+        query["query"]["query_string"]["query"] = user_query
         res = es.search(index="test-index", body=query)
         search_results = []
         for hit in res['hits']['hits']:
