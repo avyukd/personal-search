@@ -9,4 +9,4 @@ es = Elasticsearch(
     http_auth=(config['ELASTIC']['user'], config['ELASTIC']['password'])
 )
 
-print(es.info())
+print(es.indices.delete(index='lord-of-the-rings'))
