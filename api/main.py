@@ -25,6 +25,8 @@ app.add_middleware(
 es = None
 es = start_es()
 
+#add max_analyzed_offset
+
 query_template = {
         "size" : 25,
         "query": {
@@ -82,10 +84,10 @@ def test_post(item : ExtensionDoc):
     content = item.selectedText
     origin = item.origin
     timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-    date = timestamp
+    date = time.strftime('%Y-%m-%d')
     url = item.url
     filename = str(urlparse(url).netloc) + " note"
-    id = filename + " " + timestamp
+    #id = filename + " " + timestamp
     body = {
         "content": content,
         "origin": origin,
@@ -95,6 +97,6 @@ def test_post(item : ExtensionDoc):
         "filename": filename
     }
 
-    es.index(index="test-index",id=id, body=body)
+    es.index(index="test-index", body=body)
 
     return {"success": True}
