@@ -2,7 +2,16 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from setup import start_es
+from pydantic import BaseModel
+import time
+from urllib.parse import urlparse
+
 app = FastAPI()
+
+class ExtensionDoc(BaseModel):
+    selectedText: str
+    url: str = None
+    origin: str
 
 #add CORS middleware
 app.add_middleware(
@@ -57,3 +66,29 @@ def test_search(user_query: str):
         return {"search_results" : search_results, "success": True}
     else:
         return {"success": False}
+
+#add post endpoint called test
+@app.post("/test/save")
+def test_post(item : ExtensionDoc):
+    #filename will be url + "note"
+    #separate url field will be added
+    #id will be random
+    content = item.selectedText
+    origin = item.origin
+    timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+    date = timestamp
+    url = item.url
+    filename = str(urlparse(url).netloc) + " note"
+    id = filename + " " + timestamp
+    body = {
+        "content": content,
+        "origin": origin,
+        "timestamp": timestamp,
+        "date": date,
+        "url": url,
+        "filename": filename
+    }
+
+    es.index(index="test-index",id=id, body=body)
+
+    return {"success": True}
