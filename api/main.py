@@ -43,15 +43,21 @@ query_template = {
 
 @app.get("/test/search")
 def test_search(user_query: str):
+    #fp can also be a url or a file path
     if es is not None:
         query = query_template.copy()
         query["query"]["query_string"]["query"] = user_query
         res = es.search(index="test-index", body=query)
         search_results = []
         for hit in res['hits']['hits']:
-            fp = hit['_id']
             fn = hit['_source']['filename']
             origin = hit['_source']['origin']
+            if origin == "local":
+                fp = hit['_id']
+            elif origin == "Chrome":
+                fp = hit['_source']['url']
+            else:
+                fp = ""
             highlights = []
             if "filename" in hit['highlight']:
                 highlights += hit['highlight']['filename']
