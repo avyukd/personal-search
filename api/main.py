@@ -17,6 +17,7 @@ es = None
 es = start_es()
 
 query_template = {
+        "size" : 25,
         "query": {
             "query_string":{
                 "query": "",

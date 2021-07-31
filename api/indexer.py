@@ -21,7 +21,7 @@ def index_local_documents(es, ROOT, INDEX, debug=False):
                         print(fp)
                         print(res['result'])
 
-test_path = r"C:\Users\avyuk\OneDrive\Desktop"
+test_path = r"C:/Users/avyuk/Downloads"
 test_index = "test-index"
 es = start_es()
 index_local_documents(es, test_path, test_index, debug=True)
